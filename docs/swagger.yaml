@@ -1,0 +1,222 @@
+basePath: /
+definitions:
+  github_com_Wladim1r_testtask_internal_models.ErrorResponse:
+    description: Default error response
+    properties:
+      error:
+        example: error description
+        type: string
+    type: object
+  github_com_Wladim1r_testtask_internal_models.Human:
+    description: Detailed information about a person
+    properties:
+      age:
+        example: 18
+        type: integer
+      gender:
+        example: male
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Vladimir
+        type: string
+      nationality:
+        example: RU
+        type: string
+      patronymic:
+        example: Dmitrievich
+        type: string
+      surname:
+        example: Sokolov
+        type: string
+    type: object
+  github_com_Wladim1r_testtask_internal_models.PostRequest:
+    description: Required information for creating a new user
+    properties:
+      name:
+        example: Vladimir
+        type: string
+      patronymic:
+        example: Dmitrievich
+        type: string
+      surname:
+        example: Sokolov
+        type: string
+    type: object
+  github_com_Wladim1r_testtask_internal_models.SuccessResponse:
+    description: Default successfully response
+    properties:
+      message:
+        example: message description
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for managing human information with automatic age, gender and nationality
+    detection
+  title: API Server
+  version: 1.0.3
+paths:
+  /api:
+    get:
+      consumes:
+      - application/json
+      description: Get information about users with filtering options
+      operationId: get-users-info
+      parameters:
+      - description: Limit number of records
+        example: 10
+        in: query
+        minimum: 1
+        name: size
+        type: integer
+      - description: Filter by name
+        example: '"Ivan"'
+        in: query
+        name: name
+        type: string
+      - description: Filter by surname
+        example: '"Ivanov"'
+        in: query
+        name: surname
+        type: string
+      - description: Filter by patronymic
+        example: '"Ivanovich"'
+        in: query
+        name: patronymic
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Slice human structs with all fields
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.Human'
+            type: array
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+        "404":
+          description: Record not found
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+        "500":
+          description: Database error
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+      summary: Get users information
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create user full name and automatically add age, gender and nationality
+      operationId: post-user
+      parameters:
+      - description: User data to create
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.PostRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.SuccessResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error (API failure or database error)
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+      summary: Create new user
+      tags:
+      - Users
+  /api/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently removes user information by ID
+      operationId: delete-user
+      parameters:
+      - description: ID of the user to delete
+        example: 3
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.SuccessResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+        "404":
+          description: Record not found
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+        "500":
+          description: Database or Internal Server error
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+      summary: Delete user information
+      tags:
+      - Users
+    patch:
+      consumes:
+      - application/json
+      description: Change fields that were transmitted
+      operationId: change-user
+      parameters:
+      - description: ID of the user to change
+        example: 13
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      - description: New data for change existing data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.Human'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User changed successfully
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.SuccessResponse'
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+        "404":
+          description: Record not found
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_Wladim1r_testtask_internal_models.ErrorResponse'
+      summary: Update user information
+      tags:
+      - Users
+swagger: "2.0"
